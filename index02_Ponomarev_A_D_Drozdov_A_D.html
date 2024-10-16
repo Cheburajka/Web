@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Смена маркеров списка</title>
+</head>
+<body>
+    <div id="app">
+        <button v-on:click="changeMarker">Сменить маркер списка</button>
+        <ul :style="{ listStyleType: currentMarker }">
+            <li>РУТ (МИИТ)</li>
+            <li>ИТТСУ</li>
+            <li>ИЭФ</li>
+            <li>ИУЦТ</li>
+            <li>ИПСС</li>
+            <li>АБП</li>
+            <li>ВИШ</li>
+            <li>ИМТК</li>
+            <li>АВТ</li>
+            <li>АДХ</li>
+        </ul>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                markers: ['decimal', 'circle', 'square', 
+						  'disc', 'decimal-leading-zero', 'lower-alpha',
+						  'lower-greek', 'upper-alpha', 'upper-latin'],
+                currentMarkerIndex: 0 },
+            computed: {
+                currentMarker() { return this.markers[this.currentMarkerIndex]; }
+            },
+            methods: {
+                changeMarker() {
+                    this.currentMarkerIndex = (this.currentMarkerIndex + 1) % this.markers.length; }
+            }
+        });
+    </script>
+</body>
+</html>
