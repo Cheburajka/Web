@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Наблюдатели в Vue</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; 
+            margin: 0;
+        }
+        #app {
+            text-align: center;
+        }
+        select { 
+            width: 150px; 
+        }
+        input { 
+            margin-right: 10px; 
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <input type="text" v-model="inputValue" @keydown.enter="addItem" maxlength="10" placeholder="Введите название" />
+        <button @click="addItem">Добавить</button>
+
+        <select>
+            <option v-for="item in items" :key="item">{{ item }}</option>
+        </select>
+    </div>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                inputValue: '',
+                items: []
+            },
+            methods: {
+                addItem() {
+                    if (this.inputValue.trim() === '' || this.items.length >= 10) { return; }
+                    this.items.push(this.inputValue);
+                    this.inputValue = '';
+                }
+            },
+            watch: {
+                items(newItems) {
+                    console.log('Список товаров изменен:', newItems);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
