@@ -50,8 +50,18 @@
                 }
             },
             watch: {
+                inputValue(newInputValue) {
+                    console.log('Значение ввода изменено:', newInputValue);
+
+                    if (newInputValue.trim() !== '' && newInputValue.endsWith('\n')) {
+                        this.addItem();
+                    }
+                },
                 items(newItems) {
                     console.log('Список товаров изменен:', newItems);
+                },
+                'items.length'(newLength) {
+                    console.log('Длина списка товаров изменена:', newLength);
                 }
             }
         });
