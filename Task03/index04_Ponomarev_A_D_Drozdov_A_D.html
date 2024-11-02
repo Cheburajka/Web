@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Почтовый адрес</title>
+</head>
+<body>
+    <div id="app">
+        <h1>Введите адрес</h1>
+
+        <div v-if="currentStep === 0">
+            <label for="postalCode">Почтовый индекс:</label>
+            <input 
+                type="text" 
+                id="postalCode" 
+                v-model="postalCode" 
+                @blur="nextStep" 
+                placeholder="Введите почтовый индекс"
+            />
+        </div>
+
+        <div v-if="currentStep === 1">
+            <label for="city">Город:</label>
+            <input 
+                type="text" 
+                id="city" 
+                v-model="city" 
+                @blur="nextStep" 
+                placeholder="Введите город"
+            />
+        </div>
+
+        <div v-if="currentStep === 2">
+            <label for="street">Улица:</label>
+            <input 
+                type="text" 
+                id="street" 
+                v-model="street" 
+                @blur="nextStep" 
+                placeholder="Введите улицу"
+            />
+        </div>
+
+        <div v-if="currentStep === 3">
+            <label for="entrance">Подъезд:</label>
+            <input 
+                type="text" 
+                id="entrance" 
+                v-model="entrance" 
+                @blur="nextStep" 
+                placeholder="Введите подъезд"
+            />
+        </div>
+
+        <div v-if="currentStep === 4">
+            <label for="floor">Этаж:</label>
+            <input 
+                type="text" 
+                id="floor" 
+                v-model="floor" 
+                @blur="nextStep" 
+                placeholder="Введите этаж"
+            />
+        </div>
+
+        <div v-if="currentStep === 5">
+            <label for="apartment">Квартира:</label>
+            <input 
+                type="text" 
+                id="apartment" 
+                v-model="apartment" 
+                @blur="nextStep" 
+                placeholder="Введите квартиру"
+            />
+        </div>
+
+        <div v-if="currentStep === 6">
+            <label for="intercom">Домофон:</label>
+            <input 
+                type="text" 
+                id="intercom" 
+                v-model="intercom" 
+                @blur="nextStep" 
+                placeholder="Введите домофон"
+            />
+        </div>
+
+        <div v-if="currentStep === 7">
+            <h2>Ваш адрес:</h2>
+            <p>{{ formattedAddress }}</p>
+        </div>
+
+        <div v-if="currentStep < 7">
+            <p>Заполняйте поля по очереди.</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                currentStep: 0,
+                postalCode: '',
+                city: '',
+                street: '',
+                entrance: '',
+                floor: '',
+                apartment: '',
+                intercom: ''
+            },
+            methods: {
+                nextStep() {
+                    if (this.currentStep < 7) { this.currentStep++; }
+                }
+            },
+            computed: {
+                formattedAddress() {
+                    const postalCode = this.postalCode || '–';
+                    const city = this.city || '–';
+                    const street = this.street || '–';
+                    const entrance = this.entrance || '–';
+                    const floor = this.floor || '–';
+                    const apartment = this.apartment || '–';
+                    const intercom = this.intercom || '–';
+                    return `${postalCode}, г. ${city}, ул. ${street}, д. ${entrance}, этаж ${floor}, кв. ${apartment}, домофон ${intercom}`;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
