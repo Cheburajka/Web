@@ -1,0 +1,100 @@
+<html>
+	<title>Треугольник Серпинского</title>
+	<body>
+		<script src="Vue.js"></script>
+		<div id="trngl">
+			<br>
+			<svg 
+				:width="w" 
+				:height="h">
+				<rect v-for="pixel in pixels" 
+						fill="#000000"
+						fill-opacity="1"
+						:x="pixel.x" 
+						:y="pixel.y" 
+						width="1" 
+						height="1"/>
+			</svg>
+		</div>
+		<script>	
+			var Triang = new Vue({
+				el: "#trngl",
+				data:{
+					w: 500,
+					h: 500,
+					//Вершины треугольника
+					A: [0, 0],
+					B: [0.5, 0.86603], //Math.Sqrt(3)/2 = 0.86603
+					C: [1, 0],
+					pixels: [],
+				},
+				//Реактивно вычисляемые функции
+				computed:{
+					ABC: function(){
+						return [this.A, this.B, this.C];
+					}					
+				},
+				//Раздел методов фреймворка
+				methods: {	
+					drawFractal: function() {
+						//коллекция точек
+						this.pixels = [];
+						let p = [];
+						//Случайная точка внутри треугольника
+						let px = new Object();
+						let dx = (Math.random() * 100) / 100;
+						if (dx <= 0.5)
+							dy = (Math.random() * 
+								dx * Math.tan(Math.PI / 3) * 100) / 100;
+						else
+							dy = (Math.random() * 
+								(1 - dx) * Math.tan(Math.PI / 3) * 100) / 100;				
+						px.x = dx * this.w;
+						px.y = dy * this.h;	
+						this.pixels.push(px);
+						p.push([dx, dy]);
+						for (let i = 0; i < 100000; i++) {
+							let U = this.ABC[Math.floor(Math.random() * this.ABC.length)];
+							let G = p[Math.floor(Math.random() * p.length)];	
+							let d00 = Math.abs(U[0] - G[0]) / 2;
+							let d11 = Math.abs(U[1] - G[1]) / 2;
+							let dxx = 0;
+							if (U[0] > G[0])
+								dxx = G[0] + d00;
+							else
+								dxx = G[0] - d00;							
+							let dyy = 0;
+							if (U[1] > G[1])
+								dyy = G[1] + d11;
+							else
+								dyy = G[1] - d11;
+							let px = new Object();
+							px.x = dxx * this.w;
+							px.y = dyy * this.h;
+							this.pixels.push(px);
+							p.push([dxx, dyy]);
+						}
+						let now = new Date();
+						console.log("Завершено построение: " 
+							+ now + " мс: " + now.getMilliseconds());
+					},
+				},
+				created: function() {
+					let now = new Date();
+					console.log("Начато построение: " 
+						+ now + " мс: " + now.getMilliseconds());
+					this.drawFractal();
+				},
+				mounted: function() {
+					let now = new Date();
+					console.log("Отображено на странице: " 
+						+ now + " мс: " + now.getMilliseconds());
+				},
+			});
+		</script>
+		<style type="text/css">
+			svg	{ border: 1px solid #000000; }
+			input {	width:60px; }
+		</style>
+	</body>
+</html>
