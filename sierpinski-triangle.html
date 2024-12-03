@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Треугольник Серпинского</title>
+  <style>
+    body {
+      font-family: Avenir, Helvetica, Arial, sans-serif;
+      text-align: center;
+      color: #2c3e50;
+      margin-top: 60px;
+    }
+    svg {
+      border: 1px solid #000000;
+    }
+    input {
+      width: 60px;
+    }
+    #time {
+      font-size: 18px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Треугольник Серпинского</h1>
+  <div id="trngl">
+    <br>
+    <svg :width="w" :height="h">
+      <rect v-for="pixel in pixels" 
+			fill="#000000" 
+			fill-opacity="1" 
+			:x="pixel.x" 
+			:y="pixel.y" 
+			width="1" 
+			height="1"/>
+    </svg>
+    <br>
+    <label>Вершина A (x, y):</label>
+    <input type="number" v-model="A[0]">
+    <input type="number" v-model="A[1]">
+    <br>
+    <label>Вершина B (x, y):</label>
+    <input type="number" v-model="B[0]">
+    <input type="number" v-model="B[1]">
+    <br>
+    <label>Вершина C (x, y):</label>
+    <input type="number" v-model="C[0]">
+    <input type="number" v-model="C[1]">
+    <br>
+    <button @click="drawFractal">Перерисовать фрактал</button>
+    <div id="time"></div>
+  </div>
+
+  <canvas id="performanceChart"></canvas>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    var Triang = new Vue({
+      el: "#trngl",
+      data: {
+        w: 500,
+        h: 500,
+		//Вершина треугольника
+        A: [0, 0],
+        B: [0.5, 0.86603],//Math.Sqrt(3)/2 = 0.86603
+        C: [1, 0],
+        pixels: [],
+        chart: null,
+      },
+      //Реактивно вычисляемые функции
+      computed: {
+        ABC: function() {
+          return [this.A, this.B, this.C];
+        }
+      },
+      //Раздел методов фреймворка
+      methods: {
+        drawFractal: function() {
+		  //коллекция точек
+          this.pixels = [];
+          let p = [];
+		  //Случайная точка внутри треугольника
+          let dx = Math.random();
+          let dy = dx <= 0.5 ? Math.random() * dx * Math.tan(Math.PI / 3) : Math.random() * (1 - dx) * Math.tan(Math.PI / 3);
+          this.pixels.push({ x: dx * this.w, y: dy * this.h });
+          p.push([dx, dy]);
+
+		  //Числовой подсчет времени работы
+          const startTime = performance.now();
+          const startDate = new Date().toLocaleTimeString();
+
+          for (let i = 0; i < 100000; i++) {
+            let U = this.ABC[Math.floor(Math.random() * 3)];
+            let G = p[Math.floor(Math.random() * p.length)];
+            let dxx = (U[0] + G[0]) / 2;
+            let dyy = (U[1] + G[1]) / 2;
+            this.pixels.push({ x: dxx * this.w, y: dyy * this.h });
+            p.push([dxx, dyy]);
+          }
+
+          const endTime = performance.now();
+          const endDate = new Date().toLocaleTimeString();
+          const elapsedTime = endTime - startTime;
+          document.getElementById('time').innerHTML = `
+            <p>Время начала построения: ${startDate}</p>
+            <p>Время окончания построения: ${endDate}</p>
+            <p>Время построения: ${elapsedTime.toFixed(2)} мс</p>
+          `;
+
+          this.updateChart([1000000], [elapsedTime.toFixed(2)]);
+        },
+        updateChart: function(labels, data) {
+          if (!this.chart) {
+            // Инициализация диаграммы, если она еще не создана
+            var ctx = document.getElementById('performanceChart').getContext('2d');
+            this.chart = new Chart(ctx, {
+              type: 'bar',
+              data: {
+                labels: labels,
+                datasets: [{
+                  label: 'Время выполнения (мс)',
+                  data: data,
+                  backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                  borderColor: 'rgba(75, 192, 192, 1)',
+                  borderWidth: 1
+                }]
+              },
+              options: {
+                scales: {
+                  y: {
+                    beginAtZero: true
+                  }
+                }
+              }
+            });
+          } else {
+            // Обновление данных диаграммы
+            this.chart.data.labels = labels;
+            this.chart.data.datasets[0].data = data;
+            this.chart.update();
+          }
+        }
+      },
+      created: function() {
+        let now = new Date();
+        console.log("Начато построение: " + now + " мс: " + now.getMilliseconds());
+        this.drawFractal();
+      },
+      mounted: function() {
+        let now = new Date();
+        console.log("Отображено на странице: " + now + " мс: " + now.getMilliseconds());
+      },
+    });
+  </script>
+</body>
+</html>
